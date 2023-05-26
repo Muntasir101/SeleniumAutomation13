@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 import time
 from selenium.webdriver.support.ui import Select
 
+
 # Step 1 : Launch Browser
 driver = webdriver.Firefox()
 
@@ -13,6 +14,7 @@ time.sleep(5)
 # Step 3 : Type Username
 Username = driver.find_element(By.NAME, "name")
 Username.send_keys("Pnt")
+
 # Step 4 : Type Email
 Email = driver.find_element(By.CSS_SELECTOR, ".signup-form > form:nth-child(2) > input:nth-child(3)")
 Email.send_keys("pnt12@pnt2.com")
