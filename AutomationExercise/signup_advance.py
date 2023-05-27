@@ -37,11 +37,11 @@ user_credentials = [random_email(), random_number()]
 # Step 1 : Launch Browser
 driver = webdriver.Firefox()
 
-# Step 2 : Open Home page
+# Step 2 : Navigate to url 'http://automationexercise.com'
 driver.get("https://automationexercise.com/")
 time.sleep(5)
 
-# Verify that home page is visible successfully
+# 3. Verify that home page is visible successfully
 expected_home_page_url = "https://automationexercise.com/"
 actual_home_page_url = driver.current_url
 
@@ -51,11 +51,15 @@ try:
 except AssertionError:
     print("home page is not visible successfully")
 
-driver.find_element(By.CSS_SELECTOR, ".nav.navbar-nav > li:nth-of-type(4) > a").click()
+# 4. Click on 'Signup / Login' button
+signup_button = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.CSS_SELECTOR, ".nav.navbar-nav > li:nth-of-type(4) > a")))
+signup_button.click()
 
-#  Verify 'New User Signup!' is visible
+#  5. Verify 'New User Signup!' is visible
 expected_signup_page_text = "New User Signup!"
-actual_signup_page_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".signup-form h2")))
+actual_signup_page_element = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.CSS_SELECTOR, ".signup-form h2")))
 actual_signup_page_text = actual_signup_page_element.text
 
 try:
@@ -65,38 +69,50 @@ try:
 except:
     print("'New User Signup!' is not visible")
 
+# 6. Enter name and email address
 try:
-    # Step 3 : Type Username
     Username = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "name")))
     Username.send_keys(random_string())
-except :
+except:
     print("Username Locator Changed.")
 
-# Step 4 : Type Email
 try:
     Email = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, ".signup-form > form:nth-child(2) > input:nth-child(3)")))
     Email.send_keys(user_credentials[0])
-except :
+except:
     print("Email Locator Changed.")
 
-# Step 5 : Click Signup button
+# 7. Click 'Signup' button
 signup_button = WebDriverWait(driver, 10).until(
     EC.presence_of_element_located((By.CSS_SELECTOR, "button.btn:nth-child(5)")))
 signup_button.click()
 
+# 8. Verify that 'ENTER ACCOUNT INFORMATION' is visible
+expected_signup_text = "ENTER ACCOUNT INFORMATION"
 
+try:
+    actual_signup_element = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, ".login-form > .text-center.title > b")))
+    actual_signup_text = actual_signup_element.text
 
-# Step 6 : Click Title button
+    assert actual_signup_text == expected_signup_text
+    print("'ENTER ACCOUNT INFORMATION' is visible")
+
+except:
+    print("'ENTER ACCOUNT INFORMATION' is not visible")
+
+# 9. Fill details: Title, Name, Email, Password, Date of birth
+#  Click Title button
 title_button = WebDriverWait(driver, 10).until(
     EC.presence_of_element_located((By.CSS_SELECTOR, "div.radio-inline:nth-child(3) > label:nth-child(1)")))
 title_button.click()
 
-# Step 7 : Type Password
+#  Type Password
 Password = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "password")))
 Password.send_keys(user_credentials[1])
 
-# Step 8 : Click Date of birth
+#  Click Date of birth
 date = Select(WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "#days"))))
 date.select_by_visible_text("10")
 
@@ -106,7 +122,18 @@ month.select_by_visible_text("May")
 year = Select(WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "#years"))))
 year.select_by_visible_text("2010")
 
-# Step 9 : Address info
+# 10. Select checkbox 'Sign up for our newsletter!'
+news_letter = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.CSS_SELECTOR, "input#newsletter")))
+news_letter.click()
+
+# 11. Select checkbox 'Receive special offers from our partners!'
+receive_special_offers = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.CSS_SELECTOR, "input#optin")))
+receive_special_offers.click()
+
+# 12. Fill details: First name, Last name, Company, Address, Address2, Country, State, City, Zipcode, Mobile Number
+#  Address info
 try:
     Firstname = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "first_name")))
     Firstname.send_keys(random_string())
@@ -135,7 +162,21 @@ Zipcode.send_keys("700001")
 Mobile = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "mobile_number")))
 Mobile.send_keys("123456789")
 
-Create = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "[action] .btn-default")))
-Create.click()
-
+# 13. Click 'Create Account button'
+Create_account_button = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "[action] .btn-default")))
+Create_account_button.click()
 print(user_credentials)
+
+# 14. Verify that 'ACCOUNT CREATED!' is visible
+expected_account_create_text = "ACCOUNT CREATED!"
+
+try:
+    actual_account_create_element = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, ".text-center.title > b")))
+    actual_account_create_text = actual_account_create_element.text
+
+    assert actual_account_create_text == expected_account_create_text
+    print("'ACCOUNT CREATED!' is visible")
+
+except:
+    print("'ACCOUNT CREATED!' is not visible")
