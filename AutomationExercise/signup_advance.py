@@ -1,38 +1,20 @@
-from selenium import webdriver
-from selenium.common import NoSuchElementException
-from selenium.webdriver.common.by import By
 import time
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import string
-import random
+from AutomationExercise.common import common_functions as CF
+
+# https://automationexercise.com/test_cases
+# Test Case 1: Register User
+
+user_credentials = [CF.random_email(), CF.random_number(), CF.random_string()]
 
 
-def random_email():
-    domain = ["gmail.com", "yahoo.com", "hotmail.com", "outlook.com"]
-    letters = string.ascii_lowercase + string.digits
-    username = ''.join(random.choice(letters) for _ in range(5))
-    domain_name = random.choice(domain)
-    email = f"{username}@{domain_name}"
-    return email
-
-
-def random_string():
-    letters = string.ascii_lowercase + string.digits
-    random_name = ''.join(random.choice(letters) for _ in range(8))
-    string_random = f"{random_name}"
-    return random_name
-
-
-def random_number():
-    numbers = string.digits
-    random_numbers = ''.join(random.choice(numbers) for _ in range(8))
-    string_random = f"{random_numbers}"
-    return numbers
-
-
-user_credentials = [random_email(), random_number()]
+# Write user credentials to file
+filename_data = "./user_credentials"
+CF.store_user_data(filename_data, user_credentials)
 
 # Step 1 : Launch Browser
 driver = webdriver.Firefox()
@@ -72,7 +54,7 @@ except:
 # 6. Enter name and email address
 try:
     Username = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "name")))
-    Username.send_keys(random_string())
+    Username.send_keys(user_credentials[2])
 except:
     print("Username Locator Changed.")
 
@@ -136,25 +118,25 @@ receive_special_offers.click()
 #  Address info
 try:
     Firstname = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "first_name")))
-    Firstname.send_keys(random_string())
+    Firstname.send_keys(CF.random_string())
 except:
     print("Firstname not found.")
 
 Lastname = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "last_name")))
-Lastname.send_keys(random_string())
+Lastname.send_keys(CF.random_string())
 
 Address = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "address1")))
-Address.send_keys(random_string())
+Address.send_keys(CF.random_string())
 
 # Country
 Country = Select(WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "[name='country']"))))
 Country.select_by_visible_text("Canada")
 
 State = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "state")))
-State.send_keys(random_string())
+State.send_keys(CF.random_string())
 
 City = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "city")))
-City.send_keys(random_string())
+City.send_keys(CF.random_string())
 
 Zipcode = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "zipcode")))
 Zipcode.send_keys("700001")
@@ -163,13 +145,12 @@ Mobile = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 
 Mobile.send_keys("123456789")
 
 # 13. Click 'Create Account button'
-Create_account_button = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "[action] .btn-default")))
+Create_account_button = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.CSS_SELECTOR, "[action] .btn-default")))
 Create_account_button.click()
-print(user_credentials)
 
 # 14. Verify that 'ACCOUNT CREATED!' is visible
 expected_account_create_text = "ACCOUNT CREATED!"
-
 try:
     actual_account_create_element = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, ".text-center.title > b")))
@@ -180,3 +161,47 @@ try:
 
 except:
     print("'ACCOUNT CREATED!' is not visible")
+
+# 15. Click 'Continue' button
+continue_button = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.CSS_SELECTOR, ".btn-primary")))
+continue_button.click()
+
+# 16. Verify that 'Logged in as username' is visible
+expected_text_logged = "Logged in as " + user_credentials[2]
+try:
+    actual_logged_element = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, "li:nth-of-type(10) a")))
+    actual_text_logged = actual_logged_element.text
+
+    assert actual_text_logged == expected_text_logged
+    print("Logged in as " + user_credentials[2] + " is visible")
+
+except:
+    print("'Logged in as' is not visible")
+
+# 17. Click 'Delete Account' button
+account_delete_button = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.LINK_TEXT, "Delete Account")))
+account_delete_button.click()
+
+# 18. Verify that 'ACCOUNT DELETED!' is visible and click 'Continue' button
+expected_delete_text = "ACCOUNT DELETED!"
+try:
+    actual_delete_element = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, ".text-center.title > b")))
+    actual_delete_text = actual_delete_element.text
+
+    assert expected_delete_text == actual_delete_text
+    print("'ACCOUNT DELETED!' is visible")
+
+except:
+    print("'ACCOUNT DELETED!' is not visible")
+
+continue_button2 = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.CSS_SELECTOR, ".btn-primary")))
+continue_button2.click()
+
+# print(user_credentials)
+
+driver.close()
