@@ -5,6 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from AutomationExercise.common import common_functions as CF
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 # https://automationexercise.com/test_cases
 # Test Case 1: Register User
@@ -17,7 +18,10 @@ filename_data = "./user_credentials"
 CF.store_user_data(filename_data, user_credentials)
 
 # Step 1 : Launch Browser
-driver = webdriver.Firefox()
+options = FirefoxOptions()
+options.add_argument("-headless")
+driver = webdriver.Firefox(options=options)
+
 
 # Step 2 : Navigate to url 'http://automationexercise.com'
 driver.get("https://automationexercise.com/")
@@ -158,9 +162,11 @@ try:
 
     assert actual_account_create_text == expected_account_create_text
     print("'ACCOUNT CREATED!' is visible")
+    driver.get_screenshot_as_file("./Account_created_success.png")
 
 except:
     print("'ACCOUNT CREATED!' is not visible")
+    driver.get_screenshot_as_file("./Account_created_error.png")
 
 # 15. Click 'Continue' button
 continue_button = WebDriverWait(driver, 10).until(
